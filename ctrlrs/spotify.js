@@ -5,10 +5,10 @@ const spotify = new SpotifyWebApi({
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET
 });
 
-const getCredentialsThenMakeRequest = (callback) => {
-    spotify
-        .clientCredentialsGrant()
-        .then((data) => {
+const getCredentialsThenMakeRequest = async (callback) => {
+    console.log(spotify.getRefreshToken());
+    const token = await spotify.clientCredentialsGrant();
+    token.then((data) => {
             console.log('Retrieved access token', data.body['access_token']);
             spotify.setAccessToken(data.body['access_token']);
             spotify.setRefreshToken(data.body['refresh_token']);

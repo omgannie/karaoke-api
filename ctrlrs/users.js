@@ -2,31 +2,67 @@ const db = require('../db');
 
 const getAllUsers = (req, res) => {
     const query = "SELECT * FROM users";
-    db.run(query, (resp) => {
-        res.json({ all_users: resp });
+    let results = [];
+    return new Promise((resolve, reject) => {
+        db.each(query, (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                results.push(row);
+            }
+        }, (err, n) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(res.json(results));
+            }
+        });
     });
 }
 
 const createNewUser = (req, res) => {
     const query = "INSERT INTO users(name) values($1)";
     const params = [req.query.name];
-    db.run(query, params, (resp) => res.json({ new_user: resp }));
+    return new Promise((resolve, reject) => {
+        db.run(query, params, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                console.log('user created');
+                resolve(res.redirect('/users'));
+            }
+        });
+    });
 }
 
 const getUserById = (req, res) => {
-    const query = "SELECT * FROM users WHERE id = " + req.params.userId;
-    db.run(query, (resp) => res.json({ queried_user: resp }));
+    const query = `SELECT * FROM users WHERE id = ${req.params.userId}`;
+    return new Promise((resolve, reject) => {
+       db.get(query, params = [], (err, data) => {
+           if (err || data === undefined) {
+               reject(err);
+           } else {
+               resolve(res.json(data));
+           }
+       });
+    });
 }
 
 const getUsersSongs = (req, res) => {
     const { userId } = req.params;
     const query = `SELECT name, title, artist FROM songs
-    INNER JOIN users_songs
-    ON users_songs.song_id = songs.id
     INNER JOIN users
-    ON users.id = users_songs.user_id
+    ON users.id = songs.requested_user_id
     WHERE users.id = ${userId}`;
-    db.run(query, (resp) => res.json({ user: userId, songs_list: resp }));
+    return new Promise((resolve, reject) => {
+       db.each(query, params = [], (err, data) => {
+           if (err) {
+               reject(err);
+           } else {
+               resolve(res.json({ user: data.name, songs_list: [data] }));
+           }
+       });
+    });
 }
 
 module.exports = {

@@ -26,15 +26,14 @@ const getAllSongs = (req, res) => {
 }
 
 const addNewSong = (req, res) => {
-    let results = [];
-    const title = req.query.title;
-    const artist = req.query.artist;
-    const userId = req.query.userId;
+    const { title, artist, userId } = req.query.title;
     const spotifyId = spotify.searchForTrack(title, artist);
     const audio = spotify.getTrackAudio(spotifyId);
-    const query = "INSERT INTO songs(title, artist, requested_user_id) values($1, $2," +
-        " $3)";
-    const params = [title, artist, userId];
+    const query = "INSERT INTO songs(title, artist, spotify_id, href," +
+        " requested_user_id)" +
+        " values($1, $2, $3, $4, $5)";
+    console.log({ spotifyId, audio });
+    const params = [title, artist, spotifyId, audio, userId];
     return new Promise((resolve, reject) => {
         db.run(query, params, (err) => {
             if (err) {
@@ -47,20 +46,13 @@ const addNewSong = (req, res) => {
 };
 
 const getSongById = (req, res) => {
-    let results = [];
-    const query = "SELECT * FROM songs WHERE id = " + req.params.songId;
+    const query = `SELECT * FROM songs WHERE id = ${req.params.songId}`;
     return new Promise((resolve, reject) => {
-        db.each(query, (err, row) => {
+        db.get(query, (err, data) => {
             if (err) {
                 reject(err);
             } else {
-                results.push(row);
-            }
-        }, (err, n) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(res.json(results));
+                resolve(res.json(data));
             }
         });
     });
