@@ -1,6 +1,16 @@
 # karaoke-api
 node/express karaoke-based api mashup of spotify, genius, googlecloud's speech to text
 
+# endpoints (as of 12/7/2018)
+- GET /users
+- POST /users?name={name}
+- GET /users/{userId}
+- POST /songs?title={title}&artist={artist}&userId={userId}
+- GET /songs
+- GET /songs/{songId}
+- GET /users/{userId}/songs
+- GET /lyrics/{songId}
+
 # tasks left
 1) Fix Node wrapped Spotify package:
 	- Requesting necessary tokens does not work
