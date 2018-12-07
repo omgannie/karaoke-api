@@ -2,10 +2,10 @@
 node/express karaoke-based api mashup of spotify, genius, googlecloud's speech to text
 
 ## run
-`npm i`
-`npm run seed`
-`npm start`
-make requests to `localhost:3002`
+- `npm i`
+- `npm run seed`
+- `npm start`
+- make requests to `localhost:3002`
 
 ## endpoints (as of 12/7/2018)
 - GET /users
